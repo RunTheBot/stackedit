@@ -52,7 +52,7 @@ const methods = {
           const range = selectionMgr.createRange(offset - text.length, offset);
           if (`${range}` === text) {
             range.deleteContents();
-            range.insertNode(document.createTextNode(replacement));
+            range insertNode(document.createTextNode(replacement));
             offset = (offset - text.length) + replacement.length;
             selectionMgr.setSelectionStartEnd(offset, offset);
             selectionMgr.updateCursorCoordinates(true);
@@ -77,14 +77,23 @@ store.watch(
         }
         if (Object.prototype.hasOwnProperty.call(methods, method)) {
           try {
-            Mousetrap.bind(`${key}`, () => !methods[method].apply(null, params));
+            Mousetrap.bind(`${key}`, () => {
+              if (e.preventDefault) {
+                e.preventDefault();
+              } else {
+                // internet explorer
+                e.returnValue = false;
+              }
+              return !methods[method].apply(null, params);
+            });
           } catch (e) {
             // Ignore
           }
         }
       }
     });
-  }, {
-    immediate: true,
   },
+  {
+    immediate: true,
+  }
 );
